@@ -9,12 +9,12 @@ use CoordinateConversion::IBM::UTM2LatLon qw(utm2LatLon);
 
 sub latEqual {
     my ($a, $b) = @_;
-    return abs($a - $b) <= 0.0002;
+    return abs($a - $b) <= 0.00001;
 }
 
 sub lonEqual {
     my ($a, $b) = @_;
-    return abs($a - $b) <= 0.0002;
+    return abs($a - $b) <= 0.00001;
 }
 
 sub eastingEqual {
