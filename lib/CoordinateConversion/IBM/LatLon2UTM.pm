@@ -66,11 +66,23 @@ sub init {
     $A6 = -1.00541E-07;
 }
 
+# accepts either a string, or a latitude and longitude
 sub latLon2UTM {
-    my ($latitude, $longitude) = @_;
+    my ($latitude, $longitude);
+
+    if (scalar @_ == 1) {
+        my ($string) = @_;
+        my ($latitude, $longitude) = split(' ', @_);
+        $latitude += 0.0;       # cast to number
+        $longitude += 0.0;      # cast to number
+    } elsif (scalar @_ == 2) {
+        ($latitude, $longitude) = @;
+    } else {
+        die("latLon2UTM: incorrect number of parameters");
+    }
+
     init();
     validate($latitude, $longitude);
-    my $UTM = "";
     setVariables($latitude, $longitude);
     my $longZone = getLongZone($longitude);
     my $latZone = getLatZone($latitude);
@@ -81,6 +93,7 @@ sub latLon2UTM {
 
 sub setVariables {
     my ($latitude, $longitude) = @_;
+
     $latitude = degreeToRadian($latitude);
     $rho = $equatorialRadius * (1 - $e * $e)
       / POW(1 - POW($e * SIN($latitude), 2), 3 / 2.0);
