@@ -1,0 +1,34 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use Regexp::Common qw(number);
+use Math::Trig qw(pi);
+use Math::BigFloat;
+
+use CoordinateConversion::IBM::LatLon2UTM qw(latLon2UTM);
+use CoordinateConversion::IBM::UTM2LatLon qw(utm2LatLon);
+
+my $lat;
+my $lon;
+my $e;
+my $n;
+my $z1;
+my $z2;
+
+($lat, $lon) = (38.52, -85.5);
+
+($z1, $z2, $e, $n) = latLon2UTM($lat, $lon);
+print("$z1 $z2 $e $n\n");
+
+($lat, $lon) = utm2LatLon($z1, $z2, $e, $n);
+printf("lat %f, lon %f\n", $lat, $lon);
+
+($z1, $z2, $e, $n) = latLon2UTM($lat, $lon);
+print("$z1 $z2 $e $n\n");
+
+($lat, $lon) = utm2LatLon($z1, $z2, $e, $n);
+printf("lat %f, lon %f\n", $lat, $lon);
