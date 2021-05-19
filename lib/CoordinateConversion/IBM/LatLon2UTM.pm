@@ -107,12 +107,16 @@ sub latLon2UTM {
         my $ten = 10 ** $round;
         $_easting = round($_easting * $ten) / $ten;
         $_northing = round($_northing * $ten) / $ten;
-        warn("    round $round ($ten) => easting $_easting northing $_northing\n");
+        if ($ENV{DEBUG}) {
+            warn("    round $round ($ten) => easting $_easting northing $_northing\n");
+        }
     } elsif (defined $trunc) {
         my $ten = 10 ** $trunc;
         $_easting = trunc($_easting * $ten) / $ten;
         $_northing = trunc($_northing * $ten) / $ten;
-        warn("    trunc $trunc ($ten) => easting $_easting northing $_northing\n");
+        if ($ENV{DEBUG}) {
+            warn("    trunc $trunc ($ten) => easting $_easting northing $_northing\n");
+        }
     }
 
     if (wantarray) {

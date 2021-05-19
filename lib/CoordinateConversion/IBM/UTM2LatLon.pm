@@ -114,12 +114,16 @@ sub utm2LatLon {
         my $ten = 10 ** $round;
         $latitude = round($latitude * $ten) / $ten;
         $longitude = round($longitude * $ten) / $ten;
-        warn("    round $round ($ten) => latitude $latitude longitude $longitude\n");
+        if ($ENV{DEBUG}) {
+            warn("    round $round ($ten) => latitude $latitude longitude $longitude\n");
+        }
     } elsif (defined $trunc) {
         my $ten = 10 ** $trunc;
         $latitude = trunc($latitude * $ten) / $ten;
         $longitude = trunc($longitude * $ten) / $ten;
-        warn("    trunc $round ($ten) => latitude $latitude longitude $longitude\n");
+        if ($ENV{DEBUG}) {
+            warn("    trunc $round ($ten) => latitude $latitude longitude $longitude\n");
+        }
     }
 
     if (wantarray) {
