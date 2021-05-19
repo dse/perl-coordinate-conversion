@@ -63,8 +63,23 @@ sub getHemisphere {
     return $hemisphere;
 }
 
+# accepts either a string; or four parameters being longitude zone,
+# latitude zone, easting, and northing
 sub utm2LatLon {
-    (my $zone, my $latZone, $easting, $northing) = @_;
+    my ($zone, $latZone);
+
+    if (scalar @_ == 1) {
+        my ($string) = @_;
+        ($zone, $latZone, $easting, $northing) = split(' ', $string);
+        $zone += 0;             # cast to number
+        $easting += 0.0;        # cast to number
+        $northing += 0.0;       # cast to number
+    } elsif (scalar @_ == 4) {
+        ($zone, $latZone, $easting, $northing) = @_;
+    } else {
+        die("utm2LatLon: incorrect number of parameters");
+    }
+
     init();
     my $hemisphere = getHemisphere($latZone);
     my $latitude = 0.0;
