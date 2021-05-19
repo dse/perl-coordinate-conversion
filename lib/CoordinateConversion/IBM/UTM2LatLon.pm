@@ -4,6 +4,9 @@ use strict;
 
 use base 'Exporter';
 
+use vars qw($round);
+use vars qw($trunc);
+
 our @EXPORT = qw();
 our @EXPORT_OK = qw(utm2LatLon);
 
@@ -13,6 +16,7 @@ our $zone;
 our $southernHemisphere = "ACDEFGHJKLM";
 
 use Math::Trig qw(pi);
+use POSIX qw(round trunc);
 
 our $arc;
 our $mu;
@@ -71,6 +75,9 @@ sub utm2LatLon {
     if (scalar @_ == 1) {
         my ($string) = @_;
         ($zone, $latZone, $easting, $northing) = split(' ', $string);
+        # if ($ENV{DEBUG}) {
+        #     warn(sprintf("'%s' => '%s' '%s' '%s' '%s'\n", $string, $zone, $latZone, $easting, $northing));
+        # }
         $zone += 0;             # cast to number
         $easting += 0.0;        # cast to number
         $northing += 0.0;       # cast to number
@@ -98,7 +105,27 @@ sub utm2LatLon {
     if ($hemisphere eq "S") {
         $latitude = -$latitude;
     }
-    return ($latitude, $longitude);
+
+    if ($ENV{DEBUG}) {
+        warn("    latitude $latitude longitude $longitude\n");
+    }
+
+    if (defined $round) {
+        my $ten = 10 ** $round;
+        $latitude = round($latitude * $ten) / $ten;
+        $longitude = round($longitude * $ten) / $ten;
+        warn("    round $round ($ten) => latitude $latitude longitude $longitude\n");
+    } elsif (defined $trunc) {
+        my $ten = 10 ** $trunc;
+        $latitude = trunc($latitude * $ten) / $ten;
+        $longitude = trunc($longitude * $ten) / $ten;
+        warn("    trunc $round ($ten) => latitude $latitude longitude $longitude\n");
+    }
+
+    if (wantarray) {
+        return ($latitude, $longitude);
+    }
+    return "$latitude $longitude";
 }
 
 sub setVariables {

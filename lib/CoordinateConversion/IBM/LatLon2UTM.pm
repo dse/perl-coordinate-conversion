@@ -4,6 +4,9 @@ use strict;
 
 use base 'Exporter';
 
+use vars qw($round);
+use vars qw($trunc);
+
 our @EXPORT = qw();
 our @EXPORT_OK = qw(latLon2UTM);
 
@@ -34,6 +37,7 @@ our $K5;
 our $A6;
 
 use Math::Trig qw(pi);
+use POSIX qw(round trunc);
 
 use CoordinateConversion::IBM qw(SQRT POW SIN COS TAN);
 use CoordinateConversion::IBM::LatZones qw(getLatZone);
@@ -72,11 +76,14 @@ sub latLon2UTM {
 
     if (scalar @_ == 1) {
         my ($string) = @_;
-        my ($latitude, $longitude) = split(' ', @_);
+        ($latitude, $longitude) = split(' ', $string);
+        # if ($ENV{DEBUG}) {
+        #     warn(sprintf("'%s' => '%s' '%s'\n", $string, $latitude, $longitude));
+        # }
         $latitude += 0.0;       # cast to number
         $longitude += 0.0;      # cast to number
     } elsif (scalar @_ == 2) {
-        ($latitude, $longitude) = @;
+        ($latitude, $longitude) = @_;
     } else {
         die("latLon2UTM: incorrect number of parameters");
     }
@@ -88,7 +95,30 @@ sub latLon2UTM {
     my $latZone = getLatZone($latitude);
     my $_easting = getEasting();
     my $_northing = getNorthing($latitude);
-    return ($longZone, $latZone, int($_easting), int($_northing));
+
+    if ($ENV{DEBUG}) {
+        warn("    easting $_easting northing $_northing\n");
+    }
+
+    $_easting = int($_easting);
+    $_northing = int($_northing);
+
+    if (defined $round) {
+        my $ten = 10 ** $round;
+        $_easting = round($_easting * $ten) / $ten;
+        $_northing = round($_northing * $ten) / $ten;
+        warn("    round $round ($ten) => easting $_easting northing $_northing\n");
+    } elsif (defined $trunc) {
+        my $ten = 10 ** $trunc;
+        $_easting = trunc($_easting * $ten) / $ten;
+        $_northing = trunc($_northing * $ten) / $ten;
+        warn("    trunc $trunc ($ten) => easting $_easting northing $_northing\n");
+    }
+
+    if (wantarray) {
+        return ($longZone, $latZone, $_easting, $_northing);
+    }
+    return "$longZone $latZone $_easting $_northing";
 }
 
 sub setVariables {
